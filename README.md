@@ -326,13 +326,20 @@ This API and the data it serves are **free to use with attribution**. An API key
 required for every endpoint except `/api/health`, and keys are currently issued on
 request rather than self-service.
 
-If you display, publish, or build on data from this API, please credit **CryptoAlly**,
-created by **Artificialss**, linking back to
-[cryptoally.dev](https://www.cryptoally.dev):
+If you display, publish, or build on data from this API, please credit
+**[Artificialss](https://artificialss.ai)**:
 
 ```
-Data provided by CryptoAlly, created by Artificialss (https://www.cryptoally.dev)
+Data provided by Artificialss (https://artificialss.ai)
 ```
+
+Prefer a badge? Use this markdown:
+
+```
+[![Powered by Artificialss](https://img.shields.io/badge/powered%20by-Artificialss-blueviolet.svg)](https://artificialss.ai)
+```
+
+[![Powered by Artificialss](https://img.shields.io/badge/powered%20by-Artificialss-blueviolet.svg)](https://artificialss.ai)
 
 To request a key, visit **[cryptoally.app](https://cryptoally.app)**. Full, current
 usage terms live at **[www.cryptoally.dev/#usage](https://www.cryptoally.dev/#usage)**
