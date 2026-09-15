@@ -1,7 +1,7 @@
 //! GET /api/assets?type=crypto&market=japan&search=apple&limit=50&offset=0
 //!
 //! Lists assets, optionally filtered by type, market slug, and a symbol/name search.
-//! Backs a screener-style UI; see Database/README.md's "All assets in a market" query.
+//! Backs a screener-style listing use case.
 
 use cryptoally_api::{authenticate, error_response, json_response, pool, query_params, AssetSummary};
 use sqlx::{Postgres, QueryBuilder};

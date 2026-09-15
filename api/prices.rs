@@ -2,8 +2,8 @@
 //! GET /api/prices?market=crypto&symbol=bitcoin&from=2024-01-01&to=2024-12-31
 //!
 //! Daily price history for one asset. Resolve by `asset_id` directly, or by
-//! `market` (slug) + `symbol` (external_id) -- symbols alone aren't unique across
-//! markets (see Database/README.md's "one asset, one identity" design principle).
+//! `market` (slug) + `symbol` (a ticker or asset identifier) -- symbols alone aren't
+//! unique across markets, since the same ticker can exist on more than one exchange.
 
 use chrono::NaiveDate;
 use cryptoally_api::{authenticate, error_response, json_response, pool, query_params, PricePoint};

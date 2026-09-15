@@ -9,10 +9,6 @@ name = "cryptoally_api"
 path = "src/lib.rs"
 
 [[bin]]
-name = "index"
-path = "api/index.rs"
-
-[[bin]]
 name = "health"
 path = "api/health.rs"
 
@@ -23,14 +19,6 @@ path = "api/assets.rs"
 [[bin]]
 name = "prices"
 path = "api/prices.rs"
-
-[[bin]]
-name = "robots"
-path = "api/robots.rs"
-
-[[bin]]
-name = "sitemap"
-path = "api/sitemap.rs"
 
 [dependencies]
 vercel_runtime = "2"

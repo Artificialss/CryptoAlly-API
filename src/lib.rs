@@ -1,4 +1,4 @@
-//! Shared plumbing for the Cryptoally API's Vercel Rust functions.
+//! Shared plumbing for the CryptoAlly API's Vercel Rust functions.
 //!
 //! Each file under `api/` compiles to its own binary/serverless function (Vercel's
 //! Rust runtime convention), so this crate holds everything they share: the DB pool
@@ -15,10 +15,9 @@ use vercel_runtime::{Error, Response};
 
 static POOL: OnceCell<PgPool> = OnceCell::new();
 
-/// Connects using `API_DATABASE_URL` -- the `api_readonly` role's connection string
-/// (see Database/migrations/0003_roles_and_security.sql). Deliberately not
-/// `DATABASE_URL`: that name is owned by Neon's Vercel integration and points at the
-/// full-privilege `neondb_owner` role, which this API must never use.
+/// Connects using a dedicated, read-only database credential, scoped to exactly the
+/// access this API needs -- distinct from any credential used by data ingestion or
+/// schema administration, both of which run entirely out-of-band from this API.
 pub async fn pool() -> Result<&'static PgPool, Error> {
     if let Some(p) = POOL.get() {
         return Ok(p);
@@ -56,11 +55,11 @@ pub struct PricePoint {
 /// explicit dependency just for the type.
 ///
 /// No `cache-control` header here deliberately: this is used by every endpoint,
-/// including the two gated by `authenticate()`. A shared/CDN cache keys purely on URL,
-/// not headers -- a `public` cache-control would let a request with a missing or wrong
-/// `x-api-key` be served a cached response from someone else's authenticated request
-/// for the same URL, silently bypassing auth. Callers that know their response is safe
-/// to cache publicly (nothing behind auth) add the header themselves.
+/// including the ones gated by `authenticate()`. A shared/CDN cache keys purely on
+/// URL, not headers -- a `public` cache-control would let a request with a missing or
+/// wrong `x-api-key` be served a cached response from someone else's authenticated
+/// request for the same URL, silently bypassing auth. Callers that know their response
+/// is safe to cache publicly (nothing behind auth) add the header themselves.
 pub fn json_response<T: Serialize>(
     status: u16,
     body: &T,
@@ -95,10 +94,10 @@ pub fn error_response(status: u16, message: &str) -> Result<Response<serde_json:
     json_response(status, &ErrorBody { error: message })
 }
 
-/// Checks the request's `x-api-key` header against `api_keys.key_hash` (sha256, hex).
-/// Records `last_used_at` on success -- the only write `api_readonly` is allowed to make
-/// (a column-level grant; see Database/migrations/0004_api_keys.sql). Best-effort: a
-/// failure to record usage doesn't fail the request.
+/// Checks the request's `x-api-key` header against a hashed-credential store (SHA-256
+/// digest, never plaintext at rest). Records last-used-at on success, using the one
+/// narrow write this read-mostly role is granted for its own bookkeeping. Best-effort:
+/// a failure to record usage doesn't fail the request.
 pub async fn authenticate(pool: &PgPool, req: &vercel_runtime::Request) -> bool {
     let Some(key) = req.headers().get("x-api-key").and_then(|v| v.to_str().ok()) else {
         return false;
