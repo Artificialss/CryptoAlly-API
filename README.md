@@ -34,6 +34,7 @@ current docs, and to request an API key, see **[www.cryptoally.dev](https://www.
 - [Architecture](#architecture)
 - [Usage & access](#usage--access)
 - [License](#license)
+- [About](#about)
 
 ## Quick start
 
@@ -348,6 +349,17 @@ configuration, or the API's homepage/UI. Those live in a separate, private repos
 The source code in this repository is released under the [MIT License](LICENSE). This
 covers the code only — it does not grant any rights to the CryptoAlly data or API
 service itself; see [Usage & access](#usage--access) above for those terms.
+
+## About
+
+CryptoAlly is built by **[Artificialss](https://artificialss.ai)**. This repository is
+the public engineering reference for the API; the product itself — screeners, charts,
+and the rest of the CryptoAlly experience — lives at
+**[cryptoally.app](https://cryptoally.app)**, with the live API and its full docs at
+**[www.cryptoally.dev](https://www.cryptoally.dev)**.
+
+Questions, feedback, or an API key request? Reach out via
+**[artificialss.ai](https://artificialss.ai)**.
 
 ---
 
