@@ -1,0 +1,44 @@
+<svg width="100%" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="coinClip">
+      <circle cx="200" cy="200" r="134"/>
+    </clipPath>
+    <clipPath id="crownClip">
+      <polygon points="118,178 118,120 155,143 200,88 245,143 282,120 282,178"/>
+    </clipPath>
+  </defs>
+
+  <circle cx="200" cy="200" r="148" fill="#111111"/>
+
+  <g clip-path="url(#coinClip)">
+    <rect x="76"  y="268" width="15" height="126" rx="2" fill="#e53935"/>
+    <rect x="94"  y="258" width="15" height="136" rx="2" fill="#e53935"/>
+    <rect x="112" y="250" width="15" height="144" rx="2" fill="#e53935"/>
+    <rect x="130" y="244" width="15" height="150" rx="2" fill="#e53935"/>
+    <rect x="148" y="239" width="15" height="155" rx="2" fill="#F87434"/>
+    <rect x="166" y="239" width="15" height="155" rx="2" fill="#F87434"/>
+    <rect x="184" y="239" width="15" height="155" rx="2" fill="#F87434"/>
+    <rect x="202" y="233" width="15" height="161" rx="2" fill="#F87434"/>
+    <rect x="220" y="227" width="15" height="167" rx="2" fill="#F87434"/>
+    <rect x="238" y="220" width="15" height="174" rx="2" fill="#347E67"/>
+    <rect x="256" y="212" width="15" height="182" rx="2" fill="#347E67"/>
+    <rect x="274" y="204" width="15" height="190" rx="2" fill="#347E67"/>
+    <rect x="292" y="196" width="15" height="138" rx="2" fill="#347E67"/>
+    <rect x="310" y="188" width="15" height="146" rx="2" fill="#347E67"/>
+    <rect x="328" y="180" width="15" height="154" rx="2" fill="#347E67"/>
+    <rect x="346" y="172" width="15" height="162" rx="2" fill="#347E67"/>
+    <rect x="364" y="164" width="15" height="170" rx="2" fill="#347E67"/>
+  </g>
+
+  <circle cx="200" cy="200" r="148" fill="none" stroke="#347E67" stroke-width="8"/>
+  <circle cx="200" cy="200" r="138" fill="none" stroke="#347E67" stroke-width="2.5"/>
+
+  <polygon points="118,178 118,120 155,143 200,88 245,143 282,120 282,178" fill="#2A2100" stroke="none"/>
+
+  <g clip-path="url(#crownClip)">
+    <polygon points="193,112 207,112 201,144 199,144" fill="#ffffff"/>
+    <circle cx="200" cy="160" r="5.5" fill="#ffffff"/>
+  </g>
+
+  <polygon points="118,178 118,120 155,143 200,88 245,143 282,120 282,178" fill="none" stroke="#FFC84C" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
+</svg>
