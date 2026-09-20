@@ -6,7 +6,7 @@
 
 use async_trait::async_trait;
 
-use super::models::{Asset, AssetLookup, AssetQuery, CatalogEntry, PriceBar};
+use super::models::{Asset, AssetLookup, AssetQuery, CatalogEntry, FxRate, PriceBar};
 use super::types::{ApiKeyHash, AssetId, Lang};
 
 #[async_trait]
@@ -31,6 +31,17 @@ pub trait PriceRepository: Send + Sync {
         to: chrono::NaiveDate,
         limit: i64,
     ) -> Result<Vec<PriceBar>, sqlx::Error>;
+}
+
+#[async_trait]
+pub trait FxRepository: Send + Sync {
+    async fn history(
+        &self,
+        currency: &str,
+        from: chrono::NaiveDate,
+        to: chrono::NaiveDate,
+        limit: i64,
+    ) -> Result<Vec<FxRate>, sqlx::Error>;
 }
 
 #[async_trait]

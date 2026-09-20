@@ -7,9 +7,11 @@ use std::sync::Arc;
 
 use chrono::NaiveDate;
 
-use crate::domain::models::{Asset, AssetLookup, AssetQuery, CatalogEntry, PriceBar};
-use crate::domain::ports::{ApiKeyRepository, AssetRepository, AssetResolver, CatalogRepository, PriceRepository};
-use crate::domain::types::ApiKeyPlaintext;
+use crate::domain::models::{Asset, AssetLookup, AssetQuery, CatalogEntry, FxRate, PriceBar};
+use crate::domain::ports::{
+    ApiKeyRepository, AssetRepository, AssetResolver, CatalogRepository, FxRepository, PriceRepository,
+};
+use crate::domain::types::{ApiKeyPlaintext, FxCurrency};
 
 pub struct AssetService {
     repo: Arc<dyn AssetRepository>,
@@ -70,6 +72,26 @@ impl CatalogService {
             return Ok(None);
         };
         self.repo.get(asset_id, lang).await
+    }
+}
+
+pub struct FxService {
+    repo: Arc<dyn FxRepository>,
+}
+
+impl FxService {
+    pub fn new(repo: Arc<dyn FxRepository>) -> Self {
+        Self { repo }
+    }
+
+    pub async fn history(
+        &self,
+        currency: FxCurrency,
+        from: NaiveDate,
+        to: NaiveDate,
+        limit: i64,
+    ) -> Result<Vec<FxRate>, sqlx::Error> {
+        self.repo.history(currency.code(), from, to, limit).await
     }
 }
 

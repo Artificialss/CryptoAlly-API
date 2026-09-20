@@ -14,9 +14,11 @@ use chrono::NaiveDate;
 use http_body_util::BodyExt;
 use tower::ServiceExt;
 
-use cryptoally_api::application::services::{AssetService, AuthService, CatalogService, PriceService};
-use cryptoally_api::domain::models::{Asset, AssetLookup, AssetQuery, CatalogEntry, PriceBar};
-use cryptoally_api::domain::ports::{ApiKeyRepository, AssetRepository, AssetResolver, CatalogRepository, PriceRepository};
+use cryptoally_api::application::services::{AssetService, AuthService, CatalogService, FxService, PriceService};
+use cryptoally_api::domain::models::{Asset, AssetLookup, AssetQuery, CatalogEntry, FxRate, PriceBar};
+use cryptoally_api::domain::ports::{
+    ApiKeyRepository, AssetRepository, AssetResolver, CatalogRepository, FxRepository, PriceRepository,
+};
 use cryptoally_api::domain::types::{ApiKeyHash, AssetId, Lang};
 use cryptoally_api::http::{routes, AppState};
 
@@ -90,6 +92,30 @@ impl CatalogRepository for FakeCatalogRepo {
     }
 }
 
+struct FakeFxRepo {
+    rates: HashMap<String, Vec<FxRate>>,
+}
+
+#[async_trait]
+impl FxRepository for FakeFxRepo {
+    async fn history(
+        &self,
+        currency: &str,
+        _from: NaiveDate,
+        _to: NaiveDate,
+        limit: i64,
+    ) -> Result<Vec<FxRate>, sqlx::Error> {
+        Ok(self
+            .rates
+            .get(currency)
+            .cloned()
+            .unwrap_or_default()
+            .into_iter()
+            .take(limit as usize)
+            .collect())
+    }
+}
+
 struct FakeApiKeyRepo {
     valid_hash: ApiKeyHash,
 }
@@ -159,12 +185,26 @@ async fn test_app() -> axum::Router {
     );
     let catalog_repo = Arc::new(FakeCatalogRepo { entries });
 
+    let mut rates = HashMap::new();
+    rates.insert(
+        "BRL".to_string(),
+        vec![FxRate {
+            date: NaiveDate::from_ymd_opt(2024, 1, 1).unwrap(),
+            open: None,
+            high: None,
+            low: None,
+            close: None,
+        }],
+    );
+    let fx_repo = Arc::new(FakeFxRepo { rates });
+
     let api_key_repo = Arc::new(FakeApiKeyRepo { valid_hash });
 
     let state = AppState {
         assets: Arc::new(AssetService::new(asset_repo.clone())),
         prices: Arc::new(PriceService::new(asset_repo.clone(), price_repo)),
         catalog: Arc::new(CatalogService::new(asset_repo, catalog_repo)),
+        fx: Arc::new(FxService::new(fx_repo)),
         auth: Arc::new(AuthService::new(api_key_repo)),
         pool: test_pool_placeholder(),
     };
@@ -322,6 +362,44 @@ async fn catalog_for_nonexistent_asset_id_is_not_found() {
         .unwrap();
     let res = app.oneshot(req).await.unwrap();
     assert_eq!(res.status(), StatusCode::NOT_FOUND);
+}
+
+#[tokio::test]
+async fn fx_without_currency_is_bad_request() {
+    let app = test_app().await;
+    let req = Request::builder()
+        .uri("/api/fx")
+        .header("x-api-key", TEST_KEY)
+        .body(Body::empty())
+        .unwrap();
+    let res = app.oneshot(req).await.unwrap();
+    assert_eq!(res.status(), StatusCode::BAD_REQUEST);
+}
+
+#[tokio::test]
+async fn fx_with_unsupported_currency_is_bad_request() {
+    let app = test_app().await;
+    let req = Request::builder()
+        .uri("/api/fx?currency=GBP")
+        .header("x-api-key", TEST_KEY)
+        .body(Body::empty())
+        .unwrap();
+    let res = app.oneshot(req).await.unwrap();
+    assert_eq!(res.status(), StatusCode::BAD_REQUEST);
+}
+
+#[tokio::test]
+async fn fx_with_supported_currency_returns_rates() {
+    let app = test_app().await;
+    let req = Request::builder()
+        .uri("/api/fx?currency=brl")
+        .header("x-api-key", TEST_KEY)
+        .body(Body::empty())
+        .unwrap();
+    let res = app.oneshot(req).await.unwrap();
+    assert_eq!(res.status(), StatusCode::OK);
+    let body = body_json(res).await;
+    assert_eq!(body.as_array().unwrap().len(), 1);
 }
 
 #[tokio::test]

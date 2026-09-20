@@ -30,6 +30,7 @@ current docs, and to request an API key, see **[www.cryptoally.dev](https://www.
   - [`GET /api/assets`](#get-apiassets)
   - [`GET /api/prices`](#get-apiprices)
   - [`GET /api/catalog`](#get-apicatalog)
+  - [`GET /api/fx`](#get-apifx)
 - [Markets covered](#markets-covered)
 - [Architecture](#architecture)
 - [Usage & access](#usage--access)
@@ -244,6 +245,55 @@ curl -H "x-api-key: YOUR_KEY" \
 `?lang=`, falling back to English for any asset not yet translated into that language
 — translation coverage fills in incrementally, so this is never a `404`, only a
 graceful fallback.
+
+### `GET /api/fx`
+
+Daily historical value of one currency against the US dollar — a dedicated dataset
+(`fx_rates`), not part of `assets`/`daily_prices`, since exchange rates aren't
+tradeable assets with a market/exchange. Currently covers `BRL`, `CNY`, `JPY`, `EUR`,
+`KRW`.
+
+| Param | Type | Description |
+|---|---|---|
+| `currency` | string | Required. One of `BRL`, `CNY`, `JPY`, `EUR`, `KRW` — anything else is a `400` |
+| `from` / `to` | date | `YYYY-MM-DD`, default full history |
+| `limit` | int | Default `2000`, max `10000` |
+
+```bash
+curl -H "x-api-key: YOUR_KEY" \
+  "https://www.cryptoally.dev/api/fx?currency=BRL&from=2024-01-01&to=2024-01-03"
+```
+
+```json
+[
+  {
+    "date": "2024-01-01",
+    "open": "0.2061643084",
+    "high": "0.2061090744",
+    "low": "0.2060793422",
+    "close": "0.2061643084"
+  },
+  {
+    "date": "2024-01-02",
+    "open": "0.2060835949",
+    "high": "0.2062066556",
+    "low": "0.2038694475",
+    "close": "0.2060835949"
+  },
+  {
+    "date": "2024-01-03",
+    "open": "0.2031488010",
+    "high": "0.2041210781",
+    "low": "0.2027205112",
+    "close": "0.2031488010"
+  }
+]
+```
+
+Every value is USD per 1 unit of `currency` (e.g. a `close` of `0.2061643084` for BRL
+means 1 BRL was worth about $0.206 USD that day) — normalized to this direction
+server-side regardless of which way the underlying source quotes it, so every
+currency's data means the same thing.
 
 ## Markets covered
 

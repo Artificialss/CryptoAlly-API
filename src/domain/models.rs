@@ -30,6 +30,18 @@ pub struct PriceBar {
     pub volume: Option<i64>,
 }
 
+/// Daily USD value of 1 unit of `currency` (see `domain::ports::FxRepository`) --
+/// independent of `assets`/`daily_prices`, since these are exchange rates, not
+/// tradeable assets with a market/exchange.
+#[derive(Debug, Clone, Serialize, sqlx::FromRow)]
+pub struct FxRate {
+    pub date: NaiveDate,
+    pub open: Option<Decimal>,
+    pub high: Option<Decimal>,
+    pub low: Option<Decimal>,
+    pub close: Option<Decimal>,
+}
+
 #[derive(Debug, Clone, Serialize, sqlx::FromRow)]
 pub struct CatalogEntry {
     pub asset_id: AssetId,

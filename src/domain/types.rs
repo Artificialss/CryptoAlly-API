@@ -70,6 +70,42 @@ impl Lang {
     }
 }
 
+/// The currencies `/api/fx` has data for -- a closed enum, not a bare `String`, so an
+/// unsupported code is rejected before it ever reaches a query (see `parse`, which
+/// returns `None` rather than defaulting, unlike `Lang` -- there's no sensible
+/// default currency to silently fall back to).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FxCurrency {
+    Brl,
+    Cny,
+    Jpy,
+    Eur,
+    Krw,
+}
+
+impl FxCurrency {
+    pub fn code(self) -> &'static str {
+        match self {
+            FxCurrency::Brl => "BRL",
+            FxCurrency::Cny => "CNY",
+            FxCurrency::Jpy => "JPY",
+            FxCurrency::Eur => "EUR",
+            FxCurrency::Krw => "KRW",
+        }
+    }
+
+    pub fn parse(value: &str) -> Option<Self> {
+        match value.to_ascii_uppercase().as_str() {
+            "BRL" => Some(FxCurrency::Brl),
+            "CNY" => Some(FxCurrency::Cny),
+            "JPY" => Some(FxCurrency::Jpy),
+            "EUR" => Some(FxCurrency::Eur),
+            "KRW" => Some(FxCurrency::Krw),
+            _ => None,
+        }
+    }
+}
+
 /// The plaintext value of an API key as presented in the `x-api-key` header. Never
 /// stored or logged -- only ever hashed via `.hash()` before touching the database.
 #[derive(Debug, Clone)]
@@ -124,6 +160,22 @@ mod tests {
         assert_eq!(Lang::parse_or_default(Some("pt")).code(), "pt");
         assert_eq!(Lang::parse_or_default(Some("ja")).code(), "ja");
         assert_eq!(Lang::parse_or_default(Some("zh")).code(), "zh");
+    }
+
+    #[test]
+    fn fx_currency_parses_every_supported_code_case_insensitively() {
+        assert_eq!(FxCurrency::parse("BRL"), Some(FxCurrency::Brl));
+        assert_eq!(FxCurrency::parse("cny"), Some(FxCurrency::Cny));
+        assert_eq!(FxCurrency::parse("Jpy"), Some(FxCurrency::Jpy));
+        assert_eq!(FxCurrency::parse("eur"), Some(FxCurrency::Eur));
+        assert_eq!(FxCurrency::parse("KRW"), Some(FxCurrency::Krw));
+    }
+
+    #[test]
+    fn fx_currency_rejects_unsupported_codes() {
+        assert_eq!(FxCurrency::parse("USD"), None);
+        assert_eq!(FxCurrency::parse(""), None);
+        assert_eq!(FxCurrency::parse("gbp"), None);
     }
 
     #[test]
