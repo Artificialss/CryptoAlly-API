@@ -28,7 +28,6 @@ pub struct PriceBar {
     pub low: Option<Decimal>,
     pub close: Option<Decimal>,
     pub volume: Option<i64>,
-    pub close_usd: Option<Decimal>,
 }
 
 #[derive(Debug, Clone, Serialize, sqlx::FromRow)]

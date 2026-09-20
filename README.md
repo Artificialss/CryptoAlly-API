@@ -51,8 +51,7 @@ curl -H "x-api-key: YOUR_KEY" \
     "high": "44175.43750000",
     "low": "42214.97656250",
     "close": "44167.33203125",
-    "volume": 18426978443,
-    "close_usd": "44167.33203125"
+    "volume": 18426978443
   },
   {
     "date": "2024-01-02",
@@ -60,11 +59,14 @@ curl -H "x-api-key: YOUR_KEY" \
     "high": "45899.70703125",
     "low": "44176.94921875",
     "close": "44957.96875000",
-    "volume": 39335274536,
-    "close_usd": "44957.96875000"
+    "volume": 39335274536
   }
 ]
 ```
+
+Prices are always in the asset's native currency (see its `currency` field from
+`/api/assets`) — there's no server-computed USD field; converting to USD or any other
+currency is a client concern.
 
 Don't have a key yet? See [Usage & access](#usage--access).
 
@@ -153,9 +155,13 @@ curl -H "x-api-key: YOUR_KEY" \
 
 ### `GET /api/prices`
 
-Daily OHLCV + USD-converted close for one asset. Resolve the asset either with
-`asset_id` directly, or with both `market` and `symbol` — a ticker alone isn't unique
-across markets (the same symbol can exist on more than one exchange).
+Daily OHLCV history for one asset, in its native currency (see the asset's `currency`
+field from `/api/assets`) — there's no server-computed USD field, since for USD-native
+assets that'd just duplicate `close`, and for the ~1,600 non-USD assets it'd be a
+redundant FX-converted copy of every row with no server-side reader. Converting to USD
+or any other currency is left to the client. Resolve the asset either with `asset_id`
+directly, or with both `market` and `symbol` — a ticker alone isn't unique across
+markets (the same symbol can exist on more than one exchange).
 
 | Param | Type | Description |
 |---|---|---|
@@ -178,8 +184,7 @@ curl -H "x-api-key: YOUR_KEY" \
     "high": "44175.43750000",
     "low": "42214.97656250",
     "close": "44167.33203125",
-    "volume": 18426978443,
-    "close_usd": "44167.33203125"
+    "volume": 18426978443
   },
   {
     "date": "2024-01-02",
@@ -187,8 +192,7 @@ curl -H "x-api-key: YOUR_KEY" \
     "high": "45899.70703125",
     "low": "44176.94921875",
     "close": "44957.96875000",
-    "volume": 39335274536,
-    "close_usd": "44957.96875000"
+    "volume": 39335274536
   },
   {
     "date": "2024-01-03",
@@ -196,8 +200,7 @@ curl -H "x-api-key: YOUR_KEY" \
     "high": "45503.24218750",
     "low": "40813.53515625",
     "close": "42848.17578125",
-    "volume": 46342323118,
-    "close_usd": "42848.17578125"
+    "volume": 46342323118
   }
 ]
 ```

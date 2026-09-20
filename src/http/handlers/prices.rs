@@ -35,9 +35,11 @@ fn lookup_from_params(params: &PricesParams) -> Result<AssetLookup, ApiError> {
 /// GET /api/prices?asset_id=1&from=2024-01-01&to=2024-12-31
 /// GET /api/prices?market=crypto&symbol=bitcoin&from=2024-01-01&to=2024-12-31
 ///
-/// Daily OHLCV + close_usd history for one asset. Resolve by `asset_id` directly, or
-/// by `market` (slug) + `symbol` (external_id) -- symbols alone aren't unique across
-/// markets.
+/// Daily OHLCV history for one asset, in its native currency (see the asset's
+/// `currency` field from `/api/assets`). A client wanting USD (or any other
+/// currency) converts client-side -- there's no server-computed USD field.
+/// Resolve by `asset_id` directly, or by `market` (slug) + `symbol` (external_id)
+/// -- symbols alone aren't unique across markets.
 pub async fn get_prices(
     State(state): State<AppState>,
     Query(params): Query<PricesParams>,

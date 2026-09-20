@@ -137,7 +137,6 @@ async fn test_app() -> axum::Router {
             low: None,
             close: None,
             volume: None,
-            close_usd: None,
         }],
     );
     let price_repo = Arc::new(FakePriceRepo { bars });

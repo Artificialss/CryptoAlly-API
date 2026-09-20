@@ -26,7 +26,7 @@ impl PriceRepository for PgPriceRepository {
         limit: i64,
     ) -> Result<Vec<PriceBar>, sqlx::Error> {
         sqlx::query_as::<_, PriceBar>(
-            "SELECT date, open, high, low, close, volume, close_usd \
+            "SELECT date, open, high, low, close, volume \
              FROM daily_prices \
              WHERE asset_id = $1 AND date BETWEEN $2 AND $3 \
              ORDER BY date ASC LIMIT $4",
