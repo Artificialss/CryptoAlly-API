@@ -375,9 +375,9 @@ Query any of these via `/api/assets?market=<slug>` — slugs are lowercase, e.g.
 
 ## Usage & access
 
-This API and the data it serves are **free to use with attribution**. An API key is
-required for every endpoint except `/api/health`, and keys are currently issued on
-request rather than self-service.
+This API and the data it serves are **open for CryptoAlly users, with attribution**.
+An API key is required for every endpoint except `/api/health`, and keys are
+currently issued on request rather than self-service.
 
 If you display, publish, or build on data from this API, please credit
 **[Artificialss](https://artificialss.ai)**:
@@ -417,6 +417,16 @@ the public engineering reference for the API; the product itself — screeners, 
 and the rest of the CryptoAlly experience — lives at
 **[cryptoally.app](https://cryptoally.app)**, with the live API and its full docs at
 **[www.cryptoally.dev](https://www.cryptoally.dev)**.
+
+Under the hood: a Postgres database (hosted on [Neon](https://neon.tech), Vercel's
+Marketplace-native serverless Postgres) holds every asset, market, and daily price
+point, reachable only through this Rust API — no client, browser, or mobile app ever
+connects to the database directly. The API itself runs on Vercel's official Rust
+runtime, built around the clean-architecture layers documented above (`domain` /
+`application` / `infrastructure` / `http`), with role-scoped database credentials
+(`api_readonly` for every live request, a separate `seed_writer` for the offline
+ingestion job) so the request path that serves you has no write access to the data at
+all.
 
 Questions, feedback, or an API key request? Reach out via
 **[artificialss.ai](https://artificialss.ai)**.
