@@ -5,6 +5,7 @@
 </div>
 
 <p align="center">
+  <a href="https://github.com/Artificialss/CryptoAlly-API/releases"><img alt="Release" src="https://img.shields.io/badge/release-v1.2.0-blueviolet.svg"></a>
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
   <img alt="Rust" src="https://img.shields.io/badge/rust-2021-orange.svg">
   <img alt="Status" src="https://img.shields.io/badge/status-live-brightgreen.svg">
